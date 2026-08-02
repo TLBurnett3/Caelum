@@ -1,5 +1,5 @@
 
-// Template.cpp 
+// Catalog.cpp 
 // Thomas Burnett
 
 
@@ -10,22 +10,40 @@
 // 3rdPartyLibs
 
 // CRos
-#include "Template.h"
+#include "Catalog.h"
 
 //-----------------------------------------------------------------------------
 
 
+
+
 //-----------------------------------------------------------------------------
-// Template
 //-----------------------------------------------------------------------------
-Template::Template(void) 
+int Catalog::filter(Scope &scope,StarField &starField) const
 {
+  for (const auto& star : _catalog)
+  {
+    if (scope.isVisible(star))
+      starField.push_back(star);
+  }
+
+  return 0;
 }
 
+
 //-----------------------------------------------------------------------------
-// ~Template
+// Catalog
 //-----------------------------------------------------------------------------
-Template::~Template()
+Catalog::Catalog(void) : _catalog()
+{
+  _catalog.reserve(100000); // Reserve space for 100,000 stars to minimize reallocations
+}
+
+
+//-----------------------------------------------------------------------------
+// ~Catalog
+//-----------------------------------------------------------------------------
+Catalog::~Catalog()
 {
 
 }

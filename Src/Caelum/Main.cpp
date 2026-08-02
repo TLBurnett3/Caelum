@@ -12,7 +12,7 @@
 
 // Caelum
 
-#include "HipparcosLoader.h"
+#include "Hipparcos.h"
 #include "Scope.h"
 //----------------------------------------------------------------------------
 
@@ -25,14 +25,20 @@
 int main(void)
 {
 std::string     filepath = "E:\\Stars\\Hipparcos\\main";
-HipparcosLoader hipparcosLoader(filepath);
-StarCatalog     starCatalog;
-Scope           scope(LONG_AUSTIN, LAT_AUSTIN, 50.0f, 245.0f, 7.0f);
+Hipparcos       hipparcos(filepath);
+Catalog         catalog;
 bool            success(false);
 
-  if (hipparcosLoader.loadCatalog(starCatalog) == 0)
+  if (hipparcos.loadStarCatalog(catalog) == 0)
   {
-    success = true;
+  Scope     scope(LONG_AUSTIN, LAT_AUSTIN, 50.0f, 245.0f, 7.0f);
+  double    currentGMST = 210.0;
+  StarField visibleStars;
+
+    scope.setZenithRay(currentGMST);
+
+    if (catalog.filter(scope, visibleStars) == 0)
+      success = true;
   }
 
   return success ? 0 : 1;

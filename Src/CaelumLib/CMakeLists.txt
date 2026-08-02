@@ -1,16 +1,18 @@
 # Collect library source files
 set(LIB_INCLUDES
     Include/Template.h    
-    Include/StarDef.h
-    Include/HipparcosLoader.h
+    Include/Star.h
+    Include/Catalog.h
+    Include/Hipparcos.h
     Include/Scope.h
 
 )
 
 set(LIB_SOURCES
     Template.cpp
-    HipparcosLoader.cpp
+    Hipparcos.cpp
     Scope.cpp
+    Catalog.cpp
 )
 
 # Define the library target

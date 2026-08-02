@@ -37,7 +37,6 @@ struct alignas(32) Star
   uint8_t _reserved[2];  // Padding to maintain exact 32-byte alignment
 };
 
-typedef std::vector<Star> StarCatalog;
 typedef std::vector<Star> StarField;
 
 struct Ray 

@@ -1,5 +1,5 @@
 
-// Template.h
+// Catalog.h
 // Thomas Burnett
 
 #pragma once
@@ -11,14 +11,14 @@
 // 3rdPartyLibs
 
 // Caelum
-
+#include "Scope.h"
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
 // Classes
 
-class Template
+class Catalog
 {
   // Defines
   private:
@@ -27,6 +27,7 @@ class Template
 
   // Members
   private:
+    StarField _catalog;  // Vector of Star objects representing the star catalog
   protected:
   public:   
 
@@ -34,9 +35,13 @@ class Template
   private:
   protected:
   public:
+
+    int Catalog::filter(Scope &scope, StarField &starField) const;
+
+    void add(const Star& star) { _catalog.push_back(star); }
   
-    Template(void);
-    ~Template();
+    Catalog(void);
+    ~Catalog();
 };
 
 //-----------------------------------------------------------------------------
