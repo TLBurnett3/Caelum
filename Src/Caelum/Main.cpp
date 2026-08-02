@@ -31,14 +31,23 @@ bool            success(false);
 
   if (hipparcos.loadStarCatalog(catalog) == 0)
   {
-  Scope     scope(LONG_AUSTIN, LAT_AUSTIN, 50.0f, 245.0f, 7.0f);
+  Scope     scope(LONG_AUSTIN, LAT_AUSTIN, 50.0f, 245.0f, glm::vec2(7.0f, 7.0f),0.006);
   double    currentGMST = 210.0;
   StarField visibleStars;
 
-    scope.setZenithRay(currentGMST);
+    scope.pointAt(currentGMST,56.75,24.11);
 
     if (catalog.filter(scope, visibleStars) == 0)
+    {
+    cv::Mat image;
+
+      scope.projectToImage(visibleStars, image);
+
+      cv::imshow("Visible Stars", image);
+      cv::waitKey(0);
+
       success = true;
+    }
   }
 
   return success ? 0 : 1;

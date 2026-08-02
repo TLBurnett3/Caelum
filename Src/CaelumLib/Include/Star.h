@@ -15,6 +15,12 @@
 
 //-----------------------------------------------------------------------------
 
+// GLM's glm::euclidean expects a glm::vec2 formatted as glm::vec2(latitude, longitude) 
+// in radians:
+// polar.x (Latitude / Declination $\delta$): Angle up/down from the equator.
+// polar.y (Longitude / Right Ascension $\alpha$): Angle wrapped horizontally 
+// around the equator.
+
 //-----------------------------------------------------------------------------
 // Packed to 32 bytes for cache alignment (2 stars per 64-byte cache line)
 struct alignas(32) Star 

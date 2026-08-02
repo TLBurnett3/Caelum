@@ -50,7 +50,7 @@ bool              success(true);
   else
     success = false;
 
-
+/*
   std::cout << star._catalogID  << " " 
             << star._ra         << " " 
             << star._dec        << " "
@@ -58,6 +58,7 @@ bool              success(true);
             << star._pmDec      << " "
             << star._magnitude  << " " 
             << star._colorIndex << std::endl;
+*/
 
   return success ? 0 : 1;
 }
