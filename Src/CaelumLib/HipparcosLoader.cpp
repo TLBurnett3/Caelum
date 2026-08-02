@@ -7,6 +7,41 @@
 //-----------------------------------------------------------------------------
  
 
+// Converts Greenwich Mean Sidereal Time (in degrees) to Austin's Zenith Ray
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+Ray HipparcosLoader::getAustinZenithRay(double gmstDegrees, glm::vec3 origin) const 
+{
+    constexpr double AUSTIN_LAT = 30.2672;   // Declination overhead
+    constexpr double AUSTIN_LON = -97.7431;  // West longitude
+
+    // 1. Compute Local Sidereal Time (RA overhead)
+    double lstDegrees = std::fmod(gmstDegrees + AUSTIN_LON, 360.0);
+    if (lstDegrees < 0.0) lstDegrees += 360.0;
+
+    // 2. Convert to Radians
+    float raRad  = glm::radians(static_cast<float>(lstDegrees));
+    float decRad = glm::radians(static_cast<float>(AUSTIN_LAT));
+
+    // 3. Convert to 3D Celestial Unit Vector
+    // glm::euclidean expects vec2(latitude/dec, longitude/ra)
+    glm::vec3 zenithDir = glm::euclidean(glm::vec2(decRad, raRad));
+
+    return Ray{ origin, glm::normalize(zenithDir) };
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int HipparcosLoader::filterFoV(Star &star,Ray &ray) const
+{
+glm::vec3 v = celestialToEuclidean(star);
+
+
+  return 0;
+}
+
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int HipparcosLoader::getStar(const std::string &line,Star &star) const
@@ -69,9 +104,11 @@ int HipparcosLoader::loadCatalog(std::vector<Star>& outStars) const
 std::ifstream file(_filepath);
 bool         success(false);
 
+
   if (file.is_open()) 
   {
   std::string line;
+  Ray  ray = getAustinZenithRay(0.0); // Placeholder GMST, replace with actual value if needed
   size_t parsedCount = 0;
   size_t skippedCount = 0;
 
@@ -83,10 +120,13 @@ bool         success(false);
       {
       Star star{};   
 
-        if (getStar(line, star) == 0)
+        if (getStar(line,star) == 0)
         {
-          outStars.push_back(star);
-          parsedCount++;
+          if (filterFoV(star,ray) == 0)
+          {
+            outStars.push_back(star);
+            parsedCount++;
+          }
         }
         else
           skippedCount++;

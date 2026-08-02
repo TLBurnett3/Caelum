@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Configure global 3rd-party dependency search paths
 list(APPEND CMAKE_PREFIX_PATH "D:/3rdPartyLibs/")
 
+add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
+
 # Find global dependencies required across projects
 set(OpenCV_DIR "D:/3rdPartyLibs/lib")
 find_package(OpenCV REQUIRED)

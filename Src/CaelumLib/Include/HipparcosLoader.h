@@ -63,7 +63,25 @@ class HipparcosLoader
       return static_cast<float>(safeToDouble(str, defaultValue));
     }
 
+    glm::vec3 celestialToEuclidean(Star &star) const
+    {
+      // 1. Convert degrees to radians
+      float raRad  = glm::radians(static_cast<float>(star._ra));
+      float decRad = glm::radians(static_cast<float>(star._dec));
+
+      // 2. Form GLM polar vector: vec2(latitude/dec, longitude/ra)
+      glm::vec2 polar(decRad, raRad);
+
+      // 3. Convert to 3D Cartesian unit vector (x, y, z)
+      glm::vec3 dir = glm::euclidean(polar);
+
+      return dir;
+    }
+
+    Ray getAustinZenithRay(double gmstDegrees, glm::vec3 origin = glm::vec3(0.0f)) const; 
+
     int getStar(const std::string& line, Star &star) const;
+    int filterFoV(Star &star,Ray &ray) const;
   
   public:
     explicit HipparcosLoader(std::string filepath) : _filepath(std::move(filepath)) {}
