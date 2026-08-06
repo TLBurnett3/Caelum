@@ -5,7 +5,9 @@ set(LIB_INCLUDES
     Include/Catalog.h
     Include/Hipparcos.h
     Include/Scope.h
-
+    Include/Tracker.h
+    Include/OTA.h
+    Include/Sensor.h
 )
 
 set(LIB_SOURCES
@@ -13,6 +15,9 @@ set(LIB_SOURCES
     Hipparcos.cpp
     Scope.cpp
     Catalog.cpp
+    Tracker.cpp
+    OTA.cpp
+    Sensor.cpp
 )
 
 # Define the library target

@@ -1,5 +1,5 @@
 
-// Catalog.h
+// Tracker.h
 // Thomas Burnett
 
 #pragma once
@@ -7,19 +7,19 @@
 //-----------------------------------------------------------------------------
 // Includes
 // System
+#include <memory>
 
 // 3rdPartyLibs
 
 // Caelum
-//#include "Scope.h"
-#include "Star.h"
+
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
 // Classes
 
-class Catalog
+class Tracker
 {
   // Defines
   private:
@@ -28,26 +28,21 @@ class Catalog
 
   // Members
   private:
-    StarField _catalog;  // Vector of Star objects representing the star catalog
   protected:
+    double      _longitude;       
+    double      _latitude;     
   public:   
 
   // Methods
   private:
   protected:
   public:
-    size_t size() const { return _catalog.size(); }
-
-    const Star* getStarByID(size_t catalogID) const
-    { return &_catalog[catalogID]; }
-
-    //int Catalog::filter(Scope &scope, StarField &starField) const;
-
-    void add(const Star& star) { _catalog.push_back(star); }
   
-    Catalog(void);
-    ~Catalog();
+    Tracker(const double longitude, const double latitude);
+    ~Tracker();
 };
+
+typedef std::shared_ptr<Tracker>   SpTracker;
 
 //-----------------------------------------------------------------------------
 

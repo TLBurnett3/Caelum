@@ -16,6 +16,11 @@
 
 //---------------------------------------------------------------------
 
+//---------------------------------------------------------------------
+// Constants and Defines
+
+constexpr double EARTH_SIDEREAL_DEG_PER_SEC = 360.0 / 86164.0905; // ~0.0041780746 deg/s
+//---------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
@@ -185,6 +190,97 @@ float     dotProduct    = glm::dot(_direction,position);
   return false;
 }
 
+// Calculate horizontal Alt/Az coordinates for a celestial target
+
+//-----------------------------------------------------------------------------
+// calculateAltAz
+//-----------------------------------------------------------------------------
+AltAz  Scope::calculateAltAz(double raDeg, double decDeg, double lstDeg, double latDeg) {
+    double haDeg  = lstDeg - raDeg;
+    
+    double latRad = glm::radians(latDeg);
+    double decRad = glm::radians(decDeg);
+    double haRad  = glm::radians(haDeg);
+
+    // Altitude calculation
+    double sinAlt = std::sin(latRad) * std::sin(decRad) + 
+                    std::cos(latRad) * std::cos(decRad) * std::cos(haRad);
+    sinAlt = glm::clamp(sinAlt, -1.0, 1.0);
+    double altRad = std::asin(sinAlt);
+
+    // Azimuth calculation
+    double cosAlt = std::cos(altRad);
+    double cosAz = (std::sin(decRad) - std::sin(latRad) * sinAlt) / 
+                   (std::cos(latRad) * cosAlt);
+    cosAz = glm::clamp(cosAz, -1.0, 1.0);
+
+    double azRad = std::acos(cosAz);
+    if (std::sin(haRad) > 0.0) { // West of local meridian
+        azRad = glm::two_pi<double>() - azRad;
+    }
+
+    AltAz result;
+    result.altDeg = glm::degrees(altRad);
+    result.azDeg  = glm::degrees(azRad);
+    result.isVisible = (result.altDeg > 0.0);
+    return result;
+}
+
+//-----------------------------------------------------------------------------
+// track
+//-----------------------------------------------------------------------------
+int Scope::track(Catalog &catalog,
+                  const char *pStr, const double ra, const double dec,
+                  const double gmstDegrees,const double tDelta,
+                  const uint32_t nFrames,ImageLst &imageLst)
+{
+double    curLST  = gmstDegrees + ra;
+
+  for (uint32_t i = 0; i < nFrames; ++i)
+  {
+  cv::Mat image  = cv::Mat::zeros(_spSensor->imageHeight(),_spSensor->imageWidth(), CV_8UC3);
+
+    curLST += tDelta * EARTH_SIDEREAL_DEG_PER_SEC;
+
+    double LST = normalize360(curLST);
+
+    glm::vec3 vWorldUp(0.0f, 0.0f, 1.0f); // Celestial North Pole
+    glm::vec3 vPos       = celestialToEuclidean(LST,dec);
+    glm::vec3 vRight     = glm::normalize(glm::cross(vPos, vWorldUp));
+    glm::vec3 vUp        = glm::normalize(glm::cross(vRight, vPos)); 
+
+    for (size_t j = 0; j < catalog.size(); ++j)
+    {
+    const Star *pStar = catalog.getStarByID(j);
+    glm::vec3  vDir   = celestialToEuclidean(*pStar);         
+
+      vDir = glm::normalize(vDir);
+
+      double zCam = glm::dot(vDir,vPos);
+
+      if (zCam > 0)
+      {       
+      // Project star onto Camera Right (x) and Up (y) axes
+      double    xCam       = glm::dot(vDir, vRight);   // Horizontal displacement
+      double    yCam       = glm::dot(vDir, vUp);      // Vertical displacement
+      // Project star onto Camera Right (x) and Up (y) axes
+      double    xTangent   = xCam / zCam;
+      double    yTangent   = yCam / zCam;
+
+        _spSensor->render(*pStar,xTangent,yTangent,image);
+      }
+    }
+
+    std::cout << i << ":" << LST << std::endl;
+
+    cv::imshow(pStr,image);
+    cv::waitKey(100);
+
+    imageLst.push_back(image);
+  }
+
+  return 0;
+}
 
 //---------------------------------------------------------------------
 // Scope
@@ -213,6 +309,16 @@ Scope::Scope(const float longitude, const float latitude,
 }
 
 
+
+
+//---------------------------------------------------------------------
+// Scope
+//---------------------------------------------------------------------
+Scope::Scope(SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor) : _spTracker(spTracker),
+                                                                       _spOTA(spOTA),
+                                                                       _spSensor(spSensor)
+{
+}
 
 //---------------------------------------------------------------------
 // ~Scope

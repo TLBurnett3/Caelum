@@ -1,5 +1,5 @@
 
-// Catalog.h
+// OTA.h
 // Thomas Burnett
 
 #pragma once
@@ -7,19 +7,18 @@
 //-----------------------------------------------------------------------------
 // Includes
 // System
-
+#include <memory>
 // 3rdPartyLibs
 
 // Caelum
-//#include "Scope.h"
-#include "Star.h"
+
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
 // Classes
 
-class Catalog
+class OTA
 {
   // Defines
   private:
@@ -28,26 +27,24 @@ class Catalog
 
   // Members
   private:
-    StarField _catalog;  // Vector of Star objects representing the star catalog
   protected:
+    double      _aperature;       // Size of the telescope's opening (in mm)
+    double      _focalLength;     // Distance from the lens to the focal point (in mm) 
+    double      _focalRatio;      // Ratio of focal length to aperature (focalLength / aperature)
+
   public:   
 
   // Methods
   private:
   protected:
   public:
-    size_t size() const { return _catalog.size(); }
-
-    const Star* getStarByID(size_t catalogID) const
-    { return &_catalog[catalogID]; }
-
-    //int Catalog::filter(Scope &scope, StarField &starField) const;
-
-    void add(const Star& star) { _catalog.push_back(star); }
   
-    Catalog(void);
-    ~Catalog();
+    void pointAt(double ra, double dec);
+
+    OTA(const double aperature,const double focalLength);
+    ~OTA();
 };
 
+typedef std::shared_ptr<OTA>   SpOTA;
 //-----------------------------------------------------------------------------
 

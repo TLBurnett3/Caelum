@@ -1,5 +1,5 @@
 
-// Catalog.cpp 
+// OTA.cpp 
 // Thomas Burnett
 
 
@@ -10,42 +10,31 @@
 // 3rdPartyLibs
 
 // CRos
-#include "Catalog.h"
+#include "OTA.h"
 
 //-----------------------------------------------------------------------------
 
-
-
-
+// Converts Greenwich Mean Sidereal Time (in degrees) to Austin's Zenith Ray
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-/*
-int Catalog::filter(Scope &scope,StarField &starField) const
+void OTA::pointAt(double ra, double dec)
 {
-  for (const auto& star : _catalog)
-  {
-    if (scope.isVisible(star))
-      starField.push_back(star);
-  }
-
-  return 0;
-}*/
-
-
-//-----------------------------------------------------------------------------
-// Catalog
-//-----------------------------------------------------------------------------
-Catalog::Catalog(void) : _catalog()
-{
-  _catalog.reserve(100000); // Reserve space for 100,000 stars to minimize reallocations
 }
 
 
 //-----------------------------------------------------------------------------
-// ~Catalog
+// OTA
 //-----------------------------------------------------------------------------
-Catalog::~Catalog()
+OTA::OTA(const double aperature, const double focalLength) : _aperature(aperature),
+                                                             _focalLength(focalLength),
+                                                             _focalRatio(focalLength / aperature)
 {
+}
 
+//-----------------------------------------------------------------------------
+// ~OTA
+//-----------------------------------------------------------------------------
+OTA::~OTA()
+{
 }
 

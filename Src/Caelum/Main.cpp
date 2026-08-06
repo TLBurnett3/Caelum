@@ -16,9 +16,34 @@
 #include "Scope.h"
 //----------------------------------------------------------------------------
 
-#define LAT_AUSTIN 30.2672f
-#define LONG_AUSTIN -97.7431f
+#define LAT_AUSTIN 30.2672
+#define LONG_AUSTIN -97.7431
 
+#define RA_PLEADES 56.75
+#define DEC_PLEADES 56.75
+
+#define RA_NORTHPOLE 0.0
+#define DEC_NORTHPOLE 90.0
+
+#define RA_POLARIS 37.954560
+#define DEC_POLARIS 89.264108
+
+#define RA_MILKYWAY 308.0
+#define DEC_MILKYWAY 40.0 
+
+#define RA_VEGA 279.2347
+#define DEC_VEGA 38.7837
+
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void capture(Catalog& catalog, SpScope spScope, const char *pTargetName, 
+             double ra, double dec, double currentGMST, int exposureTime, int numFrames)
+{
+ ImageLst imageStk;
+
+  spScope->track(catalog, pTargetName, ra, dec, currentGMST, exposureTime, numFrames, imageStk);
+}
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -29,25 +54,19 @@ Hipparcos       hipparcos(filepath);
 Catalog         catalog;
 bool            success(false);
 
+ 
   if (hipparcos.loadStarCatalog(catalog) == 0)
   {
-  Scope     scope(LONG_AUSTIN, LAT_AUSTIN, 50.0f, 245.0f, glm::vec2(7.0f, 7.0f),0.006);
+  SpTracker spTracker   = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
+  SpOTA     spOTA       = std::make_shared<OTA>( 50.0f, 245.0f);
+  SpSensor  spSensor    = std::make_shared<Sensor>(glm::vec2(7.0f, 7.0f),0.006, 245.0f);
+  SpScope   spScope     = std::make_shared<Scope>(spTracker, spOTA, spSensor);
   double    currentGMST = 210.0;
-  StarField visibleStars;
 
-    scope.pointAt(currentGMST,56.75,24.11);
-
-    if (catalog.filter(scope, visibleStars) == 0)
-    {
-    cv::Mat image;
-
-      scope.projectToImage(visibleStars, image);
-
-      cv::imshow("Visible Stars", image);
-      cv::waitKey(0);
-
-      success = true;
-    }
+    capture(catalog,spScope,"Pleades",RA_PLEADES,DEC_PLEADES,currentGMST,10,100);
+    capture(catalog,spScope,"Polaris",RA_POLARIS,DEC_POLARIS,currentGMST,100,100);
+ 
+    cv::waitKey(0);
   }
 
   return success ? 0 : 1;
