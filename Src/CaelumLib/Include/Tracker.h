@@ -37,6 +37,8 @@ class Tracker
   private:
   protected:
   public:
+    double getLongitude() const { return _longitude; }
+    double getLatitude() const { return _latitude; }
   
     Tracker(const double longitude, const double latitude);
     ~Tracker();

@@ -41,8 +41,6 @@ class Catalog
     const Star* getStarByID(size_t catalogID) const
     { return &_catalog[catalogID]; }
 
-    //int Catalog::filter(Scope &scope, StarField &starField) const;
-
     void add(const Star& star) { _catalog.push_back(star); }
   
     Catalog(void);

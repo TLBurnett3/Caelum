@@ -63,8 +63,10 @@ bool            success(false);
   SpScope   spScope     = std::make_shared<Scope>(spTracker, spOTA, spSensor);
   double    currentGMST = 210.0;
 
-    capture(catalog,spScope,"Pleades",RA_PLEADES,DEC_PLEADES,currentGMST,10,100);
-    capture(catalog,spScope,"Polaris",RA_POLARIS,DEC_POLARIS,currentGMST,100,100);
+    capture(catalog,spScope,"Pleades",RA_PLEADES,DEC_PLEADES,currentGMST,60,120);
+    capture(catalog,spScope,"Polaris",RA_POLARIS,DEC_POLARIS,currentGMST,60,120);
+    capture(catalog,spScope,"Milky Way",RA_MILKYWAY,DEC_MILKYWAY,currentGMST,60,120);
+    capture(catalog,spScope,"VEGA",RA_VEGA,DEC_VEGA,currentGMST,60,120);
  
     cv::waitKey(0);
   }

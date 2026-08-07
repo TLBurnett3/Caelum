@@ -60,71 +60,45 @@ class Scope
 
   // Methods
   private:
-    glm::vec3 altAzToDirection(double altDeg, double azDeg)
+    // ra  = az = long
+    // alt = dec = lat 
+    glm::vec3 altAzToEuclidean(double azDeg,double altDeg) const
     {
     float altRad = glm::radians(static_cast<float>(altDeg));
     float azRad  = glm::radians(static_cast<float>(azDeg));
     float cosAlt = std::cos(altRad);
-
-        return glm::vec3(
+    glm::vec3 v =  glm::vec3(
             cosAlt * std::sin(azRad), // X = East
             cosAlt * std::cos(azRad), // Y = North
             std::sin(altRad)          // Z = Zenith (Up)
         );
+
+      return glm::normalize(v);
     }
 
     glm::vec3 celestialToEuclidean(const Star &star) const
-    {
-      // 1. Convert degrees to radians
-      float raRad  = glm::radians(static_cast<float>(star._ra));
-      float decRad = glm::radians(static_cast<float>(star._dec));
-      float cosDec = std::cos(decRad);
-
-      // Explicit 3D conversion matching astronomical Cartesian conventions
-      return glm::vec3(
-        cosDec * std::cos(raRad),  // X
-        cosDec * std::sin(raRad),  // Y
-        std::sin(decRad));         // Z
-    }  
+    {  return altAzToEuclidean(star._ra,star._dec); }  
 
     glm::vec3 celestialToEuclidean(double raDeg,double decDeg) const
-    {
-      // 1. Convert degrees to radians
-      float raRad  = glm::radians(static_cast<float>(raDeg));
-      float decRad = glm::radians(static_cast<float>(decDeg));
-      float cosDec = std::cos(decRad);
+    { return altAzToEuclidean(raDeg,decDeg); }  
 
-      // Explicit 3D conversion matching astronomical Cartesian conventions
-      return glm::vec3(
-        cosDec * std::cos(raRad),  // X
-        cosDec * std::sin(raRad),  // Y
-        std::sin(decRad));         // Z
-    }  
-
+    glm::vec3 geographicToEuclidean(double longDeg,double latDeg) const
+    { return altAzToEuclidean(longDeg,latDeg); }  
 
     // Wrap angle to [0, 360) degrees
     inline double normalize360(double angle) {
       double res = std::fmod(angle, 360.0);
       return (res < 0.0) ? res + 360.0 : res;
-
     }
 
   protected:
-    AltAz  calculateAltAz(double raDeg, double decDeg, double lstDeg, double latDeg);
 
   public:
-    void projectToImage(const StarField &starField, cv::Mat &image);
-
-    void pointAt(double gmstDegrees, double raT, double decT);
-
     int track(Catalog &catalog, 
               const char *pStr, const double ra, const double dec,
               const double gmstDegrees, const double tDelta,
               const uint32_t nFrames,ImageLst &imageLst);
-
-    bool isVisible(const Star& star) const;
-
-  
+ 
     Scope(SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor);
 
 

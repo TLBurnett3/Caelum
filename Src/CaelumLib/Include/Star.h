@@ -44,10 +44,4 @@ struct alignas(32) Star
 };
 
 typedef std::vector<Star> StarField;
-
-struct Ray 
-{
-  glm::vec3 _origin;    // Starting point (e.g., Earth center or surface)
-  glm::vec3 _direction; // Unit vector pointing straight up into space
-};
 //-----------------------------------------------------------------------------

@@ -63,10 +63,7 @@ class Hipparcos
       return static_cast<float>(safeToDouble(str, defaultValue));
     }
 
-
-
     int getStar(const std::string& line, Star &star) const;
-    int filterFoV(Star &star,Ray &ray) const;
   
   public:
     explicit Hipparcos(std::string filepath) : _filepath(std::move(filepath)) {}
