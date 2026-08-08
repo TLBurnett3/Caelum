@@ -31,22 +31,22 @@ bool              success(true);
     success = false;
 
   if (getToken(line,token,156,162) == 0)
-    star._pmRA = static_cast<float>(safeToDouble(token,0.0));
+    star._pmRA = safeToFloat(token,0.0f);
   else
     success = false;
 
   if (getToken(line,token,163,169) == 0)
-    star._pmDec = static_cast<float>(safeToDouble(token,0.0));
+    star._pmDec = safeToFloat(token,0.0f);
   else
     success = false;
 
   if (getToken(line,token,191,197) == 0)
-    star._magnitude = static_cast<float>(safeToDouble(token,99.0));
+    star._magnitude = safeToFloat(token,99.0f);
   else
     success = false;
 
   if (getToken(line,token,203,209) == 0)
-    star._colorIndex = static_cast<float>(safeToDouble(token,0.0));
+    star._bvColorIndex = safeToFloat(token,0.0f);
   else
     success = false;
 
@@ -56,8 +56,8 @@ bool              success(true);
             << star._dec        << " "
             << star._pmRA       << " "  
             << star._pmDec      << " "
-            << star._magnitude  << " " 
-            << star._colorIndex << std::endl;
+            << star._blueMagnitude  << " " 
+            << star._bvColorIndex << std::endl;
 */
 
   return success ? 0 : 1;
@@ -69,9 +69,8 @@ bool              success(true);
 //-----------------------------------------------------------------------------
 int Hipparcos::loadStarCatalog(Catalog& catalog) const 
 {
-std::ifstream file(_filepath);
+std::ifstream file(_filePath);
 bool         success(false);
-
 
   if (file.is_open()) 
   {
@@ -101,7 +100,25 @@ bool         success(false);
     success = true; 
   }
   else
-    std::cerr << "Error: Could not open Hipparcos file: " << _filepath << std::endl;
+    std::cerr << "Error: Could not open Hipparcos file: " << _filePath << std::endl;
 
   return success ? 0 : 1;
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Hipparcos
+//-----------------------------------------------------------------------------
+Hipparcos::Hipparcos(const std::string &filepath) : Parser(filepath)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+// ~Hipparcos
+//-----------------------------------------------------------------------------
+Hipparcos::~Hipparcos()
+{
+
 }

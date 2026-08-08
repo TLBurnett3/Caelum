@@ -34,11 +34,11 @@ struct alignas(32) Star
   float _pmDec;          // Proper motion in Dec
     
   // Photometry & Physical Properties
-  float _magnitude;      // Apparent visual magnitude (V or G band)
-  float _colorIndex;     // BP - RP or B - V (useful for rendering temperature/color)
+  float _magnitude;       // visual magnitude (brightness)
+  float _bvColorIndex;    // color index, useful for rendering temperature/color
     
   // Identifiers
-  uint32_t _catalogID;   // Identifier (e.g., Tycho-2 ID, UCAC4 ID, or local index)
+  uint32_t _catalogID;   // Identifier (e.g., Tycho2 ID, UCAC4 ID, or local index)
   uint16_t _flags;       // Bitfield for metadata (e.g., variable star, binary, quality flag)
   uint8_t _reserved[2];  // Padding to maintain exact 32-byte alignment
 };

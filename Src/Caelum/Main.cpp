@@ -13,6 +13,7 @@
 // Caelum
 
 #include "Hipparcos.h"
+#include "Tycho-2.h"
 #include "Scope.h"
 //----------------------------------------------------------------------------
 
@@ -49,17 +50,21 @@ void capture(Catalog& catalog, SpScope spScope, const char *pTargetName,
 //----------------------------------------------------------------------------
 int main(void)
 {
-std::string     filepath = "E:\\Stars\\Hipparcos\\main";
-Hipparcos       hipparcos(filepath);
+std::string     hipparocsfilepath = "E:\\Stars\\Hipparcos\\main";
+std::string     tycho2FilePath    = "E:\\Stars\\Tycho-2";
+Hipparcos       hipparcos(hipparocsfilepath);
+Tycho2          tycho2(tycho2FilePath);
 Catalog         catalog;
-bool            success(false);
+int             rc = 0;
 
- 
-  if (hipparcos.loadStarCatalog(catalog) == 0)
+//  rc |= hipparcos.loadStarCatalog(catalog);
+  rc |= tycho2.loadStarCatalog(catalog);
+
+  if (rc == 0)
   {
   SpTracker spTracker   = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
   SpOTA     spOTA       = std::make_shared<OTA>( 50.0f, 245.0f);
-  SpSensor  spSensor    = std::make_shared<Sensor>(glm::vec2(7.0f, 7.0f),0.006, 245.0f);
+  SpSensor  spSensor    = std::make_shared<Sensor>(glm::vec2(7.0f, 7.0f),0.006f, 245.0f);
   SpScope   spScope     = std::make_shared<Scope>(spTracker, spOTA, spSensor);
   double    currentGMST = 210.0;
 
@@ -71,7 +76,7 @@ bool            success(false);
     cv::waitKey(0);
   }
 
-  return success ? 0 : 1;
+  return rc;
 }
 
 

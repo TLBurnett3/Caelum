@@ -70,8 +70,6 @@ glm::vec3 vDir      = geographicToEuclidean(ra,dec);
       }
     }
 
-    std::cout << i << ":" << LST << std::endl;
-
     cv::imshow(pStr,image);
     cv::waitKey(100);
 
@@ -79,32 +77,6 @@ glm::vec3 vDir      = geographicToEuclidean(ra,dec);
   }
 
   return 0;
-}
-
-//---------------------------------------------------------------------
-// Scope
-//---------------------------------------------------------------------
-Scope::Scope(const float longitude, const float latitude, 
-             const float aperature, 
-             const float focalLength,
-             const glm::vec2 sensorSize,
-             const float  pixelSize,
-             const float toleranceDeg) :_longitude(longitude),
-                                        _latitude(latitude),
-                                        _lst(longitude),
-                                       _direction(0.0f,0.0f,1.0f),
-                                       _aperature(aperature),
-                                       _focalLength(focalLength),
-                                       _sensorSize(sensorSize),             
-                                       _pixelSize(pixelSize),
-                                       _focalRatio(focalLength / aperature),
-                                       _fovYDeg(0.0f),
-                                       _cosThreshold(0.0f)   
-{
-  _imageSize = glm::ivec2(static_cast<int>(_sensorSize.x / _pixelSize),
-                          static_cast<int>(_sensorSize.y / _pixelSize));
-  _fovYDeg       = 2.0f * glm::degrees(atan((_sensorSize.y / 2.0f) / _focalLength));
-  _cosThreshold  = std::cos(glm::radians(toleranceDeg));
 }
 
 

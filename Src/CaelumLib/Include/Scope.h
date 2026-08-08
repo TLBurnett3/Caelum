@@ -42,19 +42,6 @@ class Scope
     SpOTA     _spOTA;           // Pointer to the OTA object
     SpSensor  _spSensor;        // Pointer to the Sensor object
 
-    float      _longitude;       
-    float      _latitude;       
-    float      _lst;             // localside real time
-    glm::vec3  _direction;       // Unit vector pointing along optical axis
-    float      _aperature;       // Size of the telescope's opening (in mm)
-    float      _focalLength;     // Distance from the lens to the focal point (in mm) 
-    glm::vec2  _sensorSize;      // Size of the camera sensor (in mm)
-    float      _pixelSize;       // Size of a single pixel on the sensor (in mm)
-    glm::ivec2 _imageSize;       // Size of the image in pixels (width, height)
-    float      _focalRatio;      // Ratio of focal length to aperature (focalLength / aperature)
-    float      _fovYDeg;         // Angular extent of the observable sky (in degrees)
-    float      _cosThreshold;
-
   protected:
   public:   
 
@@ -100,11 +87,6 @@ class Scope
               const uint32_t nFrames,ImageLst &imageLst);
  
     Scope(SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor);
-
-
-    Scope(const float ra, const float dec, const float aperature, 
-          const float focalLength, const glm::vec2 sensorSize,
-          const float  pixelSize, const float toleranceDeg = 0.5f);
 
     ~Scope();
 };

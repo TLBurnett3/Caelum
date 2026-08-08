@@ -15,6 +15,7 @@
 
 // Caelum
 #include "Star.h"
+#include "ColorLUT.h"
 //-----------------------------------------------------------------------------
 
 
@@ -36,7 +37,9 @@ class Sensor
     glm::vec2   _imageSize;
     glm::vec2   _halfWidth;
 
-    glm::vec2  _fovDeg;
+    glm::vec2   _fovDeg;
+
+    ColorLUT    _colorLUT;
   public:   
 
   // Methods

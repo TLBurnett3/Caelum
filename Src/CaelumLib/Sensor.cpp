@@ -48,7 +48,7 @@ void Sensor::render(const Star& star, double xTangent, double yTangent,cv::Mat &
                           static_cast<int>(std::round(yPixel)));
 
     // Draw star centroid on the sensor frame
-    cv::circle(image, targetPoint, 1, cv::Scalar(255, 255, 255), -1);
+    cv::circle(image, targetPoint, 1, _colorLUT.getColor(star._bvColorIndex), -1);
   }
 }
 
@@ -61,7 +61,9 @@ Sensor::Sensor(const glm::vec2 sensorSize,const float  pixelSize,
                                                                       _pixelSize(pixelSize),
                                                                       _imageSize(static_cast<int>(_sensorSize.x / _pixelSize),
                                                                                  static_cast<int>(_sensorSize.y / _pixelSize)),
-                                                                      _halfWidth(_imageSize * 0.5f)
+                                                                      _halfWidth(_imageSize * 0.5f),
+                                                                      _fovDeg(0.0f, 0.0f),
+                                                                      _colorLUT()                                           
 {
   _fovDeg.x = (2.0f * glm::degrees(atan((_sensorSize.x / 2.0f) / focalLength)));
   _fovDeg.y = (2.0f * glm::degrees(atan((_sensorSize.y / 2.0f) / focalLength)));

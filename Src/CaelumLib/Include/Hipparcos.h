@@ -1,73 +1,45 @@
 #pragma once
 
+// Hipparcos.h
+// Thomas Burnett
+
 //-----------------------------------------------------------------------------
 // Includes
 // System
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
-#include <cstdint>
-#include <algorithm>
 
-// Project
-#include "Catalog.h"
+// 3rdPartyLibs
+
+// Caelum
+#include "Parser.h"
 //-----------------------------------------------------------------------------
  
 //-----------------------------------------------------------------------------
 // Classes
-class Hipparcos 
+class Hipparcos : public Parser
 {
+  // Defines
+  private:
+  protected:
+  public:
+
   // Members
   private:
-    std::string _filepath;
+  protected:
+  public:
 
   // Methods
   private:
-
-    // Helper to safely convert string to double/float, handling blank fields
-    static double safeToDouble(const std::string& str, double defaultValue = 0.0) 
-    {
-      if (str.empty() || std::all_of(str.begin(), str.end(), ::isspace))
-      {
-        return defaultValue;
-      }
-
-      try 
-      {
-        return std::stod(str);
-      } 
-      catch (...) 
-      {
-        return defaultValue;
-      }
-    }
-
-    static int getToken(const std::string& line, std::string& token, uint32_t startCol, uint32_t endCol) 
-    {
-    uint32_t sC = startCol - 1;
-    uint32_t eC = endCol - 1;
-      
-      if ((sC < eC) &&(sC < line.size()) && (eC < line.size())) 
-      {
-        token = line.substr(sC,eC-sC);
-        return 0;
-      }
-
-      return 1; 
-    }
-
-    static float safeToFloat(const std::string& str, float defaultValue = 0.0f) 
-    {
-      return static_cast<float>(safeToDouble(str, defaultValue));
-    }
+  protected:
+  public:
 
     int getStar(const std::string& line, Star &star) const;
   
   public:
-    explicit Hipparcos(std::string filepath) : _filepath(std::move(filepath)) {}
 
-    int loadStarCatalog(Catalog& catalog) const;
+    virtual int loadStarCatalog(Catalog& catalog) const;   
+
+    Hipparcos(const std::string &filepath);
+    ~Hipparcos();
+
 };
 //-----------------------------------------------------------------------------
