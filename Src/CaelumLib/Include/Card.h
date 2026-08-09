@@ -1,21 +1,26 @@
-#pragma once
 
-// Hipparcos.h
+// Card.h
 // Thomas Burnett
+
+#pragma once
 
 //-----------------------------------------------------------------------------
 // Includes
 // System
+#include <vector>
+#include <string>
 
 // 3rdPartyLibs
 
 // Caelum
-#include "Parser.h"
+
 //-----------------------------------------------------------------------------
- 
+
+
 //-----------------------------------------------------------------------------
 // Classes
-class Hipparcos : public Parser
+
+class Card
 {
   // Defines
   private:
@@ -25,21 +30,22 @@ class Hipparcos : public Parser
   // Members
   private:
   protected:
-  public:
+    std::string _commonName;
+    std::string _designation;
+    double      _raDeg;
+    double      _decDeg;
+  public:   
 
   // Methods
   private:
   protected:
   public:
-
-    int getStar(const std::string& line, Star &star) const;
   
-  public:
-
-    int loadStarCatalog(Catalog& catalog) const;   
-
-    Hipparcos(const std::string &filepath);
-    ~Hipparcos();
-
+    Card(void);
+    ~Card();
 };
+
+
+typedef std::vector<Card> StarIndex;
 //-----------------------------------------------------------------------------
+

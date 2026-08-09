@@ -14,6 +14,7 @@
 
 #include "Hipparcos.h"
 #include "Tycho-2.h"
+#include "Index.h"
 #include "Scope.h"
 //----------------------------------------------------------------------------
 
@@ -52,12 +53,15 @@ int main(void)
 {
 std::string     hipparocsfilepath = "E:\\Stars\\Hipparcos\\main";
 std::string     tycho2FilePath    = "E:\\Stars\\Tycho-2";
+std::string     indexFilePath     = "E:\\Stars\\Stars.csv";
 Hipparcos       hipparcos(hipparocsfilepath);
 Tycho2          tycho2(tycho2FilePath);
+Index           index(indexFilePath);
 Catalog         catalog;
 int             rc = 0;
 
 //  rc |= hipparcos.loadStarCatalog(catalog);
+  rc |= index.loadStarCards(catalog);
   rc |= tycho2.loadStarCatalog(catalog);
 
   if (rc == 0)

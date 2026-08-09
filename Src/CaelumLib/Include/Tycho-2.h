@@ -56,7 +56,7 @@ class Tycho2 : public Parser
     int loadTypcho2(Catalog& catalog,const std::filesystem::path& fileName) const;
 
   public:
-    virtual int loadStarCatalog(Catalog& catalog) const;
+    int loadStarCatalog(Catalog& catalog) const;
   
     Tycho2(const std::string &filepath);
     ~Tycho2();

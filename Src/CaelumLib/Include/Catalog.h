@@ -11,8 +11,8 @@
 // 3rdPartyLibs
 
 // Caelum
-//#include "Scope.h"
 #include "Star.h"
+#include "Card.h"
 //-----------------------------------------------------------------------------
 
 
@@ -28,7 +28,8 @@ class Catalog
 
   // Members
   private:
-    StarField _catalog;  // Vector of Star objects representing the star catalog
+    StarIndex _index;       // Index of star names, positions, magnitudes, etc.
+    StarField _catalog;     // Vector of Star objects representing the star catalog
   protected:
   public:   
 
@@ -36,7 +37,8 @@ class Catalog
   private:
   protected:
   public:
-    size_t size() const { return _catalog.size(); }
+    size_t indexSize()   const { return _index.size(); }
+    size_t catalogSize() const { return _catalog.size(); }
 
     const Star* getStarByID(size_t catalogID) const
     { return &_catalog[catalogID]; }

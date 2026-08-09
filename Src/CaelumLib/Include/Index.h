@@ -1,7 +1,8 @@
-#pragma once
 
-// Hipparcos.h
+// Index.h
 // Thomas Burnett
+
+#pragma once
 
 //-----------------------------------------------------------------------------
 // Includes
@@ -11,35 +12,39 @@
 
 // Caelum
 #include "Parser.h"
+#include "Card.h"
 //-----------------------------------------------------------------------------
- 
+
+
 //-----------------------------------------------------------------------------
 // Classes
-class Hipparcos : public Parser
+
+
+class Index : public Parser
 {
   // Defines
   private:
   protected:
+
   public:
 
   // Members
   private:
   protected:
-  public:
+
+  public:   
 
   // Methods
   private:
   protected:
-  public:
+    int Index::getStarCard(const std::string &line,Card &card) const;
 
-    int getStar(const std::string& line, Star &star) const;
+  public:
+    int Index::loadStarCards(Catalog& catalog) const;
   
-  public:
-
-    int loadStarCatalog(Catalog& catalog) const;   
-
-    Hipparcos(const std::string &filepath);
-    ~Hipparcos();
-
+    Index(const std::string &_filepath);
+    ~Index();
 };
+
 //-----------------------------------------------------------------------------
+

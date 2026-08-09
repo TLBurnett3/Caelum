@@ -11,6 +11,8 @@ set(LIB_INCLUDES
     Include/OTA.h
     Include/Sensor.h
     Include/ColorLUT.h
+    Include/Index.h
+    Include/Card.h
 )
 
 set(LIB_SOURCES
@@ -24,6 +26,8 @@ set(LIB_SOURCES
     OTA.cpp
     Sensor.cpp
     ColorLUT.cpp
+    Index.cpp
+    Card.cpp
 )
 
 # Define the library target

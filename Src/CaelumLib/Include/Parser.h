@@ -155,9 +155,10 @@ class Parser
 
       return defaultValue;
     }
-  public:
-    virtual int loadStarCatalog(Catalog& catalog) const = 0;   
 
+    size_t Parser::tokenize(const std::string& input, char delimiter,std::vector<std::string> &tokens) const;
+
+  public:
     Parser(const std::string &_filepath);
     ~Parser();
 };

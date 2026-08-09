@@ -50,7 +50,7 @@ glm::vec3 vDir      = geographicToEuclidean(ra,dec);
     glm::vec3 vRight = glm::normalize(glm::cross(vDir, vPos));  // vPos is for altaz mount, vWorldUp is for equatorial mount
     glm::vec3 vUp    = glm::cross(vRight, vDir); 
 
-    for (size_t j = 0; j < catalog.size(); ++j)
+    for (size_t j = 0; j < catalog.catalogSize(); ++j)
     {
     const Star *pStar = catalog.getStarByID(j);
     glm::vec3  vStar  = celestialToEuclidean(*pStar);         
