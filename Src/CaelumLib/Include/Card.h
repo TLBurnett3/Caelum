@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------
 // Includes
 // System
-#include <vector>
+#include <unordered_map>
 #include <string>
 
 // 3rdPartyLibs
@@ -40,12 +40,26 @@ class Card
   private:
   protected:
   public:
+    const std::string commonName(void) const
+    { return _commonName; }
+
+    void setCommonName(const std::string &name)
+    { _commonName = name; }
+
+    void setDesignation(const std::string &des)
+    { _designation = des; }
+
+    void setCelestialCoordinates(const double raDeg,const double decDeg)
+    { 
+      _raDeg   = raDeg;
+      _decDeg  = decDeg;
+    }
   
     Card(void);
     ~Card();
 };
 
 
-typedef std::vector<Card> StarIndex;
+typedef std::unordered_map<std::string,Card> StarIndex;
 //-----------------------------------------------------------------------------
 

@@ -25,8 +25,16 @@ int Index::getStarCard(const std::string &line,Card &card) const
 std::vector<std::string> tokens;
 int                      rc = 0;
 
-  if (tokenize(line,',',tokens) > 0)
+  if (tokenize(line,',',tokens) >= 4)
   {
+    card.setCommonName(tokens[0]);
+    card.setDesignation(tokens[1]);
+    card.setCelestialCoordinates(safeToDouble(tokens[2]),safeToDouble(tokens[3]));
+
+    std::cout << tokens[0] << " " << 
+                 tokens[1] << " " <<
+                 tokens[2] << " " <<
+                 tokens[3] << std::endl;
   }
   else
     rc = -1;
@@ -57,7 +65,7 @@ int           rc = 0;
 
         if (getStarCard(line,card) == 0)
         {
-      //    catalog.add(card);
+          catalog.add(card);
           parsedCount++;
         }
         else

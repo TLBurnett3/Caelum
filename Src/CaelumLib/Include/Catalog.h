@@ -8,6 +8,7 @@
 // Includes
 // System
 
+
 // 3rdPartyLibs
 
 // Caelum
@@ -43,6 +44,7 @@ class Catalog
     const Star* getStarByID(size_t catalogID) const
     { return &_catalog[catalogID]; }
 
+    void add(const Card& card) { _index[card.commonName()] = card; }
     void add(const Star& star) { _catalog.push_back(star); }
   
     Catalog(void);

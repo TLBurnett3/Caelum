@@ -66,9 +66,13 @@ int             rc = 0;
 
   if (rc == 0)
   {
+  float     aperture    = 50.0f;
+  float     focalLength = 245.0f;
+//  float     aperture    = 200.0f;
+//  float     focalLength = 800.0f;
   SpTracker spTracker   = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
-  SpOTA     spOTA       = std::make_shared<OTA>( 50.0f, 245.0f);
-  SpSensor  spSensor    = std::make_shared<Sensor>(glm::vec2(7.0f, 7.0f),0.006f, 245.0f);
+  SpOTA     spOTA       = std::make_shared<OTA>( aperture, focalLength);
+  SpSensor  spSensor    = std::make_shared<Sensor>(glm::vec2(7.0f, 7.0f),0.006f,focalLength);
   SpScope   spScope     = std::make_shared<Scope>(spTracker, spOTA, spSensor);
   double    currentGMST = 210.0;
 
