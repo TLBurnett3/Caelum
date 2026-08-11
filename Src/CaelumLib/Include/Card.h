@@ -43,6 +43,12 @@ class Card
     const std::string commonName(void) const
     { return _commonName; }
 
+    const double raDeg(void) const 
+    { return _raDeg; }
+
+    const double decDeg(void) const
+    { return _decDeg; }
+
     void setCommonName(const std::string &name)
     { _commonName = name; }
 

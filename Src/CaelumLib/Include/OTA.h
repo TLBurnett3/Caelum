@@ -38,8 +38,14 @@ class OTA
   private:
   protected:
   public:
-  
-    void pointAt(double ra, double dec);
+    double aperature(void) const
+    { return _aperature; }
+
+    double focalLength(void) const
+    { return _focalLength; }
+
+    double focalRatio(void) const
+    { return _focalRatio; }
 
     OTA(const double aperature,const double focalLength);
     ~OTA();

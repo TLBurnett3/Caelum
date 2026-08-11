@@ -41,6 +41,17 @@ class Catalog
     size_t indexSize()   const { return _index.size(); }
     size_t catalogSize() const { return _catalog.size(); }
 
+    const Card* getCardByName(const char *pN)
+    { 
+    std::string name(pN);
+    const Card *pCard = 0;
+
+      if (_index.find(name) != _index.end())
+        pCard = &_index[name];
+
+      return pCard; 
+    }
+
     const Star* getStarByID(size_t catalogID) const
     { return &_catalog[catalogID]; }
 

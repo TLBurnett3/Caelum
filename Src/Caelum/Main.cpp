@@ -24,28 +24,9 @@
 #define RA_PLEADES 56.75
 #define DEC_PLEADES 56.75
 
-#define RA_NORTHPOLE 0.0
-#define DEC_NORTHPOLE 90.0
-
-#define RA_POLARIS 37.954560
-#define DEC_POLARIS 89.264108
-
 #define RA_MILKYWAY 308.0
 #define DEC_MILKYWAY 40.0 
 
-#define RA_VEGA 279.2347
-#define DEC_VEGA 38.7837
-
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-void capture(Catalog& catalog, SpScope spScope, const char *pTargetName, 
-             double ra, double dec, double currentGMST, int exposureTime, int numFrames)
-{
- ImageLst imageStk;
-
-  spScope->track(catalog, pTargetName, ra, dec, currentGMST, exposureTime, numFrames, imageStk);
-}
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -66,20 +47,22 @@ int             rc = 0;
 
   if (rc == 0)
   {
-  float     aperture    = 50.0f;
-  float     focalLength = 245.0f;
-//  float     aperture    = 200.0f;
-//  float     focalLength = 800.0f;
-  SpTracker spTracker   = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
-  SpOTA     spOTA       = std::make_shared<OTA>( aperture, focalLength);
-  SpSensor  spSensor    = std::make_shared<Sensor>(glm::vec2(7.0f, 7.0f),0.006f,focalLength);
-  SpScope   spScope     = std::make_shared<Scope>(spTracker, spOTA, spSensor);
-  double    currentGMST = 210.0;
+  double    exposureTime  = 10.0;
+  double     aperture     = 50.0;
+  double     focalLength  = 245.0;
+//  double     aperture    = 200.0;
+//  double     focalLength = 800.0;
+  SpTracker spTracker     = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
+  SpOTA     spOTA         = std::make_shared<OTA>( aperture, focalLength);
+  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(7.0f, 7.0f),0.006f);
+  SpScope   spScope       = std::make_shared<Scope>(spTracker, spOTA, spSensor);
+  double    currentGMST   = 210.0;
+  uint32_t  numExposures  = 120;
 
-    capture(catalog,spScope,"Pleades",RA_PLEADES,DEC_PLEADES,currentGMST,60,120);
-    capture(catalog,spScope,"Polaris",RA_POLARIS,DEC_POLARIS,currentGMST,60,120);
-    capture(catalog,spScope,"Milky Way",RA_MILKYWAY,DEC_MILKYWAY,currentGMST,60,120);
-    capture(catalog,spScope,"VEGA",RA_VEGA,DEC_VEGA,currentGMST,60,120);
+ //   spScope->capture(catalog,"Pleades",RA_PLEADES,DEC_PLEADES,currentGMST,exposureTime,numExposures);
+ //   spScope->capture(catalog,"Milky Way",RA_MILKYWAY,DEC_MILKYWAY,currentGMST,exposureTime,numExposures);
+ 
+    spScope->capture(catalog,"Polaris",currentGMST,exposureTime,numExposures);
  
     cv::waitKey(0);
   }

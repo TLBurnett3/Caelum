@@ -85,6 +85,15 @@ class Scope
               const char *pStr, const double ra, const double dec,
               const double gmstDegrees, const double tDelta,
               const uint32_t nFrames,ImageLst &imageLst);
+
+    int capture(Catalog& catalog,const char *pTargetName, 
+                const double ra, const double dec,
+                const double currentGMST, const double exposureTime, 
+                const int numFrames);
+
+    int Scope::capture(Catalog& catalog, const char *pTargetName, 
+             const double currentGMST, const double exposureTime, 
+             const int numFrames);
  
     Scope(SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor);
 

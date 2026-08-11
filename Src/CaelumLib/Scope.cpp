@@ -29,7 +29,7 @@ constexpr double EARTH_SIDEREAL_DEG_PER_SEC = 360.0 / 86164.0905; // ~0.00417807
 //-----------------------------------------------------------------------------
 int Scope::track(Catalog &catalog,
                   const char *pStr, const double ra, const double dec,
-                  const double gmstDegrees,const double tDelta,
+                  const double gmstDegrees,const double exposureTime,
                   const uint32_t nFrames,ImageLst &imageLst)
 {
 double    curLat    = _spTracker->getLatitude();
@@ -40,9 +40,10 @@ glm::vec3 vDir      = geographicToEuclidean(ra,dec);
 
   for (uint32_t i = 0; i < nFrames; ++i)
   {
-  cv::Mat image  = cv::Mat::zeros(_spSensor->imageHeight(),_spSensor->imageWidth(), CV_8UC3);
+  cv::Mat iPrime  = cv::Mat::zeros(_spSensor->imageHeight(),_spSensor->imageWidth(), CV_8UC3);
+  cv::Mat iLight  = cv::Mat::zeros(_spSensor->imageHeight(),_spSensor->imageWidth(), CV_32FC3);
 
-    curLST += tDelta * EARTH_SIDEREAL_DEG_PER_SEC;
+    curLST += exposureTime * EARTH_SIDEREAL_DEG_PER_SEC;
 
     double LST = normalize360(curLST);
 
@@ -66,20 +67,56 @@ glm::vec3 vDir      = geographicToEuclidean(ra,dec);
       double    xTangent   = xCam / zCam;
       double    yTangent   = yCam / zCam;
 
-        _spSensor->render(*pStar,xTangent,yTangent,image);
+        _spSensor->render(*pStar,exposureTime,xTangent,yTangent,iPrime,iLight);
       }
     }
 
-    cv::imshow(pStr,image);
+    cv::imshow(pStr,iPrime);
     cv::waitKey(100);
 
-    imageLst.push_back(image);
+    imageLst.push_back(std::pair(iPrime,iLight));
   }
 
   return 0;
 }
 
 
+//----------------------------------------------------------------------------
+// capture
+//----------------------------------------------------------------------------
+int Scope::capture(Catalog& catalog, const char *pTargetName, 
+             const double ra, const double dec, 
+             const double currentGMST, const double exposureTime, 
+             const int numFrames)
+{
+ ImageLst imageStk;
+int       rc = 0;
+
+  rc = track(catalog, pTargetName, ra, dec, currentGMST, exposureTime, numFrames, imageStk);
+
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+// capture
+//----------------------------------------------------------------------------
+int Scope::capture(Catalog& catalog, const char *pTargetName, 
+             const double currentGMST, const double exposureTime, 
+             const int numFrames)
+{
+ImageLst      imageStk;
+int           rc = 0;
+const Card    *pCard = catalog.getCardByName(pTargetName);
+
+  if (pCard)
+  {
+    rc = track(catalog, pTargetName,
+         pCard->raDeg(),pCard->decDeg(),
+         currentGMST, exposureTime, numFrames, imageStk);
+  }
+
+  return rc;
+}
 
 
 //---------------------------------------------------------------------
