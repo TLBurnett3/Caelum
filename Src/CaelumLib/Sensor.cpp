@@ -28,75 +28,61 @@
 //-----------------------------------------------------------------------------
 void Sensor::render(const Star& star, const double exposureTime,
                     double xTangent, double yTangent,
-                    cv::Mat &iPrime,cv::Mat &iLight)
+                    cv::Mat &image)
 {
-  // Convert Gnomonic Tangent Coordinates (xCam/zCam, yCam/zCam) to Pixel space 
-  // Convert normalized projection coordinates to continuous pixel coordinates
-  // Assuming xTangent and yTangent are angular offsets relative to optical center:
+// 1. Convert Gnomonic Tangent Coordinates to Continuous Pixel Coordinates
   double focalLengthPixels = _halfWidth.x / std::tan(glm::radians(_fovDeg.x * 0.5f));
 
   double xPixel = _halfWidth.x + (xTangent * focalLengthPixels);
-  // Y pixel direction is inverted in standard image matrices (0 is top)
   double yPixel = _halfWidth.y - (yTangent * focalLengthPixels);
 
-  // 2. Sensor Boundary Check
-  bool visible = (xPixel >= 0.0 && xPixel < static_cast<double>(_imageSize.x) &&
-                  yPixel >= 0.0 && yPixel < static_cast<double>(_imageSize.y));
+  // Quick bounding box check (including PSF radius allowance)
+  float sigma = _fwhmPixels / 2.35482f;
+  int radius = static_cast<int>(std::ceil(sigma * 4.0f));
 
-  if (visible)
+  if (xPixel < -radius || xPixel >= image.cols + radius ||
+      yPixel < -radius || yPixel >= image.rows + radius)
   {
-    // Round to nearest pixel coordinate to avoid systematic 1-px drift
-    cv::Point targetPoint(static_cast<int>(std::round(xPixel)), 
-                          static_cast<int>(std::round(yPixel)));
+    return; // Fast reject off-sensor stars
+  }
 
-    // Draw star centroid on the RGB sensor frame
-    cv::circle(iPrime, targetPoint, 1, _colorLUT.getColor(star._bvColorIndex), -1);
+  // 2. Photometric Energy Calculation
+  // 0-mag Vega baseline ~1e6 photoelectrons/sec/cm^2 (adjusted by aperture/aperture efficiency)
+  float fluxRate = 1.0e6f * std::pow(10.0f, -0.4f * static_cast<float>(star.visualMagnitude())); 
+  float totalElectrons = fluxRate * static_cast<float>(exposureTime);
 
+  // Early cut-off for undetectable sub-electron flux
+  if (totalElectrons < 1e-4f) return; 
+
+  cv::Vec3f bgrWeights = getBGRWeightsFromBV(star.bvColorIndex());
+  cv::Vec3f totalChannelElectrons = bgrWeights * totalElectrons;
+
+  // 3. PSF Gaussian Splat
+  int minX = std::max(0, static_cast<int>(std::floor(xPixel - radius)));
+  int maxX = std::min(image.cols - 1, static_cast<int>(std::ceil(xPixel + radius)));
+  int minY = std::max(0, static_cast<int>(std::floor(yPixel - radius)));
+  int maxY = std::min(image.rows - 1, static_cast<int>(std::ceil(yPixel + radius)));
+
+  float twoSigmaSq = 2.0f * sigma * sigma;
+  float normFactor = 1.0f / (3.14159265358979323846f * twoSigmaSq);
+  cv::Vec3f psfAmplitude = totalChannelElectrons * normFactor;
+
+  for (int y = minY; y <= maxY; ++y) 
+  {
+    cv::Vec3f* rowPtr = image.ptr<cv::Vec3f>(y);
+    float dy = static_cast<float>(y) - static_cast<float>(yPixel);
+    float dySq = dy * dy;
+
+    for (int x = minX; x <= maxX; ++x) 
     {
-    cv::circle(iLight, targetPoint, 1, _colorLUT.getColor(star._bvColorIndex), -1);
-    }
+      float dx = static_cast<float>(x) - static_cast<float>(xPixel);
+      float distSq = dx * dx + dySq;
 
+      // 2D Gaussian Kernel
+      float psfIntensity = std::exp(-distSq / twoSigmaSq);
 
-    {
-    // Total photon flux rate (e-/sec across the optical bandpass)
-    // Assumes Phi0 (0-mag flux) = ~1000 photons/sec/cm^2/A
-    float fluxRate = 1.0e6f * std::pow(10.0f, -0.4f * star._magnitude); 
-    float totalElectrons = fluxRate * exposureTime;
-
-    // Determine channel distribution
-    cv::Vec3f bgrWeights = getBGRWeightsFromBV(star._bvColorIndex);
-    cv::Vec3f totalChannelElectrons = bgrWeights * totalElectrons;
-
-    // PSF Geometry (2D Gaussian)
-    float sigma = _fwhmPixels / 2.35482f; // Convert FWHM to sigma
-    int radius = static_cast<int>(std::ceil(sigma * 4.0f)); // 4-sigma bounding box
-
-    int minX = std::max(0, static_cast<int>(std::floor(xPixel - radius)));
-    int maxX = std::min(iLight.cols - 1, static_cast<int>(std::ceil(xPixel + radius)));
-    int minY = std::max(0, static_cast<int>(std::floor(yPixel - radius)));
-    int maxY = std::min(iLight.rows - 1, static_cast<int>(std::ceil(yPixel + radius)));
-
-    float twoSigmaSq = 2.0f * sigma * sigma;
-    float normFactor = 1.0f / (3.14159265f * twoSigmaSq);
-
-      // Splat Gaussian onto the 3-channel 32-bit floating point matrix
-      for (int y = minY; y <= maxY; ++y) 
-      {
-      cv::Vec3f* rowPtr = iLight.ptr<cv::Vec3f>(y);
-      float dy = y - yPixel;
-      float dySq = dy * dy;
-
-        for (int x = minX; x <= maxX; ++x) 
-        {
-        float dx = x - xPixel;
-        float distSq = dx * dx + dySq;
-        // Normalized 2D Gaussian spatial fraction
-        float psfIntensity = normFactor * std::exp(-distSq / twoSigmaSq);
-
-          // Add scaled photoelectrons directly to B, G, and R channels
-          rowPtr[x] += totalChannelElectrons * psfIntensity;
-        }
-      }
+      // Accumulate photoelectrons into 32-bit float BGR matrix
+      rowPtr[x] += psfAmplitude * psfIntensity;
     }
   }
 }
@@ -127,6 +113,8 @@ double fwhmOpticsPix = fwhmOpticsArcsec / pixelScale;    // ~0.74 pixels
 
   _fovDeg.x = (2.0f * glm::degrees(atan((_sensorSize.x / 2.0f) / spOTA->focalLength())));
   _fovDeg.y = (2.0f * glm::degrees(atan((_sensorSize.y / 2.0f) / spOTA->focalLength())));
+
+  spOTA->setFovDeg(std::sqrt(std::pow(_fovDeg.x,2) + std::pow(_fovDeg.y,2)));
 
   // Root-sum-square total FWHM in pixels
   _fwhmPixels = std::sqrt(fwhmSeeingPix * fwhmSeeingPix + fwhmOpticsPix * fwhmOpticsPix);

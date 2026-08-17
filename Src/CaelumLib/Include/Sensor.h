@@ -57,6 +57,8 @@ class Sensor
     uint32_t imageHeight(void)
     { return _imageSize.y; }
 
+    
+
     // Helper to estimate normalized BGR flux weights from star's B-V index
     cv::Vec3f getBGRWeightsFromBV(float bv) 
     {
@@ -75,13 +77,13 @@ class Sensor
       return cv::Vec3f(b / norm, g / norm, r / norm); 
     }
 
-    void render(const Star& star,const double exposureTime, double xTangent, double yTangent,cv::Mat &iPrime,cv::Mat &iLight);
+    void render(const Star& star,const double exposureTime, double xTangent, double yTangent,cv::Mat &image);
 
     Sensor(const SpOTA &spOTA,const glm::vec2 sensorSize,const float  pixelSize);
     ~Sensor();
 };
 
-typedef std::shared_ptr<Sensor>                      SpSensor;
-typedef std::vector<std::pair<cv::Mat,cv::Mat>>      ImageLst;
+typedef std::shared_ptr<Sensor>   SpSensor;
+typedef std::vector<cv::Mat>      ImageLst;
 //-----------------------------------------------------------------------------
 

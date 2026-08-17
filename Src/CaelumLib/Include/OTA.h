@@ -8,7 +8,9 @@
 // Includes
 // System
 #include <memory>
+
 // 3rdPartyLibs
+#include <glm/glm.hpp>
 
 // Caelum
 
@@ -31,6 +33,8 @@ class OTA
     double      _aperature;       // Size of the telescope's opening (in mm)
     double      _focalLength;     // Distance from the lens to the focal point (in mm) 
     double      _focalRatio;      // Ratio of focal length to aperature (focalLength / aperature)
+    double      _fovDeg;          // field of view in degrees
+
 
   public:   
 
@@ -38,14 +42,20 @@ class OTA
   private:
   protected:
   public:
-    double aperature(void) const
+    const double aperature(void) const
     { return _aperature; }
 
-    double focalLength(void) const
+    const double focalLength(void) const
     { return _focalLength; }
 
-    double focalRatio(void) const
+    const double focalRatio(void) const
     { return _focalRatio; }
+
+    const double fovDeg(void) const
+    { return _fovDeg; }
+
+    void setFovDeg(const double d) 
+    { _fovDeg = (2.0f * glm::degrees(atan((d / 2.0f) / _focalLength))); }
 
     OTA(const double aperature,const double focalLength);
     ~OTA();

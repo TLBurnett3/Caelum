@@ -1,6 +1,8 @@
 # Collect library source files
 set(LIB_INCLUDES
-    Include/Template.h    
+    Include/Template.h        
+    Include/Export.h      
+    Include/Timer.h    
     Include/Star.h
     Include/Parser.h
     Include/Catalog.h
@@ -13,6 +15,7 @@ set(LIB_INCLUDES
     Include/ColorLUT.h
     Include/Index.h
     Include/Card.h
+    Include/Region.h
 )
 
 set(LIB_SOURCES

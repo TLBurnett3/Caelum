@@ -21,9 +21,11 @@
 //-----------------------------------------------------------------------------
 OTA::OTA(const double aperature, const double focalLength) : _aperature(aperature),
                                                              _focalLength(focalLength),
-                                                             _focalRatio(focalLength / aperature)
+                                                             _focalRatio(focalLength / aperature),
+                                                             _fovDeg(0)
 {
 }
+
 
 //-----------------------------------------------------------------------------
 // ~OTA

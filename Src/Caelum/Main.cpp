@@ -41,13 +41,14 @@ Index           index(indexFilePath);
 Catalog         catalog;
 int             rc = 0;
 
-//  rc |= hipparcos.loadStarCatalog(catalog);
-  rc |= index.loadStarCards(catalog);
+  rc |= index.loadStarCards(catalog);  
+  rc |= hipparcos.loadStarCatalog(catalog);
   rc |= tycho2.loadStarCatalog(catalog);
 
   if (rc == 0)
   {
-  double    exposureTime  = 10.0;
+  double    exposureTime  = 10.0;  // secs
+  double    trackTime     = 60 * 60 * 1; // seconds * minutes * hours
   double     aperture     = 50.0;
   double     focalLength  = 245.0;
 //  double     aperture    = 200.0;
@@ -57,12 +58,12 @@ int             rc = 0;
   SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(7.0f, 7.0f),0.006f);
   SpScope   spScope       = std::make_shared<Scope>(spTracker, spOTA, spSensor);
   double    currentGMST   = 210.0;
-  uint32_t  numExposures  = 120;
+  uint32_t  numExposures  = (uint32_t)(trackTime / exposureTime);
 
  //   spScope->capture(catalog,"Pleades",RA_PLEADES,DEC_PLEADES,currentGMST,exposureTime,numExposures);
  //   spScope->capture(catalog,"Milky Way",RA_MILKYWAY,DEC_MILKYWAY,currentGMST,exposureTime,numExposures);
  
-    spScope->capture(catalog,"Polaris",currentGMST,exposureTime,numExposures);
+    spScope->captureImageSet(catalog,"Alpha Centauri A",currentGMST,exposureTime,numExposures,true);
  
     cv::waitKey(0);
   }

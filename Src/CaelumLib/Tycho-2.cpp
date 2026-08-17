@@ -17,6 +17,7 @@
 
 
 //-----------------------------------------------------------------------------
+// getStar
 //-----------------------------------------------------------------------------
 int Tycho2::getStar(const std::string &line,Star &star) const
 {
@@ -24,31 +25,26 @@ std::string       token;
 int               rc = 0;
 
   // ID
-  {
   uint16_t tyc1 = static_cast<uint16_t>(getSafeUInt(line,1,4));
   uint16_t tyc2 = static_cast<uint16_t>(getSafeUInt(line,6,10));
   uint16_t tyc3 = static_cast<uint16_t>(getSafeUInt(line,12,12));
 
- //   if ((tyc1 == 4628) && (tyc2 == 237))
- //     std::cout << line << std::endl;
-
-    star._catalogID = packTychoID(tyc1, tyc2, tyc3);
-  }
-       
+  star.setTychoID(tyc1,tyc2,tyc3);
+        
   // Position
   if (getSafeChar(line,14,14) != 'X')
   {
-    star._ra    = getSafeDouble(line,16,27);
-    star._dec   = getSafeDouble(line,29,40);
-    star._pmRA  = getSafeFloat(line,42,48);
-    star._pmDec = getSafeFloat(line, 50, 56);
+    star.setRaDeg(getSafeDouble(line,16,27));
+    star.setDecDeg(getSafeDouble(line,29,40));
+    star.setRaProperMotion(getSafeFloat(line,42,48));
+    star.setDecProperMotion(getSafeFloat(line, 50, 56));
   }
   else
   {
-    star._ra    = getSafeDouble(line,153,164);
-    star._dec   = getSafeDouble(line,166,177);
-    star._pmRA  = 0.0f;
-    star._pmDec = 0.0f;
+    star.setRaDeg(getSafeDouble(line,153,164));
+    star.setDecDeg(getSafeDouble(line,166,177));
+    star.setRaProperMotion(0.0f);
+    star.setDecProperMotion(0.0f);
   }
 
   // Magnitude & Color
@@ -57,23 +53,13 @@ int               rc = 0;
   float VT = 0.0f;
 
     BT = getSafeFloat(line, 111,116);
-    VT = getSafeFloat(line, 124, 129);
+    VT = getSafeFloat(line, 124,129);
 
     float delta = BT - VT;  
 
-    star._bvColorIndex = 0.850f * delta;
-    star._magnitude    = VT - 0.090f * delta;
+    star.setBVColorIndex(0.850f * delta);
+    star.setVisualMagnitude(VT - (0.090f * delta));
   }
-
-/*
-  std::cout << star._catalogID  << " " 
-            << star._ra         << " " 
-            << star._dec        << " "
-            << star._pmRA       << " "  
-            << star._pmDec      << " "
-            << star._magnitude  << " " 
-            << star._bvColorIndex << std::endl;
-*/
 
   return rc;
 }

@@ -16,48 +16,38 @@ std::string       token;
 bool              success(true); 
 
   if (getToken(line,token,1,7) == 0)
-    star._catalogID = static_cast<uint32_t>(safeToDouble(token,0.0));
-  else
-    success = false;
+    star.setHipparcosID(safeToUInt(token,0.0));
        
   if (getToken(line,token,58,68) == 0)
-    star._ra = safeToDouble(token,0.0);
-  else
-    success = false;
+    star.setRaDeg(safeToDouble(token,0.0));
 
   if (getToken(line,token,69,79) == 0)
-    star._dec = safeToDouble(token,0.0);
-  else
-    success = false;
+    star.setDecDeg(safeToDouble(token,0.0));
 
   if (getToken(line,token,156,162) == 0)
-    star._pmRA = safeToFloat(token,0.0f);
-  else
-    success = false;
+    star.setRaProperMotion(safeToFloat(token,0.0f));
 
   if (getToken(line,token,163,169) == 0)
-    star._pmDec = safeToFloat(token,0.0f);
-  else
-    success = false;
+    star.setDecProperMotion(safeToFloat(token,0.0f));
 
   if (getToken(line,token,191,197) == 0)
-    star._magnitude = safeToFloat(token,99.0f);
-  else
-    success = false;
+    star.setVisualMagnitude(safeToFloat(token,99.0f));
 
   if (getToken(line,token,203,209) == 0)
-    star._bvColorIndex = safeToFloat(token,0.0f);
-  else
-    success = false;
+    star.setBVColorIndex(safeToFloat(token,0.0f));
 
 /*
+  if (star._catalogID == 80763)
+  {
   std::cout << star._catalogID  << " " 
             << star._ra         << " " 
             << star._dec        << " "
             << star._pmRA       << " "  
             << star._pmDec      << " "
-            << star._blueMagnitude  << " " 
-            << star._bvColorIndex << std::endl;
+            << star._vMag  << " " 
+            << star._bv << std::endl;
+
+  }
 */
 
   return success ? 0 : 1;

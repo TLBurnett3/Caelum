@@ -14,6 +14,7 @@
 // Caelum
 #include "Star.h"
 #include "Card.h"
+#include "Region.h"
 //-----------------------------------------------------------------------------
 
 
@@ -29,8 +30,9 @@ class Catalog
 
   // Members
   private:
-    StarIndex _index;       // Index of star names, positions, magnitudes, etc.
-    StarField _catalog;     // Vector of Star objects representing the star catalog
+    CelestialSky  _sky;         // Sky partitioned into regions
+    StarIndex     _index;       // Index of star names, positions, magnitudes, etc.
+    StarField     _catalog;     // Vector of Star objects representing the star catalog
   protected:
   public:   
 
@@ -51,12 +53,27 @@ class Catalog
 
       return pCard; 
     }
+    
+    const Region *region(const uint32_t raDeg,const uint32_t decDeg)
+    { 
+    uint32_t i = (decDeg * 360) + raDeg;
+
+      return &_sky[i];
+    }
 
     const Star* getStarByID(size_t catalogID) const
     { return &_catalog[catalogID]; }
 
-    void add(const Card& card) { _index[card.commonName()] = card; }
-    void add(const Star& star) { _catalog.push_back(star); }
+    void add(const Card& card) 
+    { _index[card.commonName()] = card; }
+
+    void add(const Star& star) 
+    { 
+    uint32_t i = star.region();
+
+      _sky[i].add(star);
+      _catalog.push_back(star);
+    }
   
     Catalog(void);
     ~Catalog();
