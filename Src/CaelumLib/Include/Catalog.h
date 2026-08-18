@@ -30,9 +30,8 @@ class Catalog
 
   // Members
   private:
-    CelestialSky  _sky;         // Sky partitioned into regions
-    StarIndex     _index;       // Index of star names, positions, magnitudes, etc.
-    StarField     _catalog;     // Vector of Star objects representing the star catalog
+    StarIndex     _index;         // Index of star names, positions, magnitudes, etc.
+    CelestialSky  _celestialsky;  // Sky partitioned into regions
   protected:
   public:   
 
@@ -41,7 +40,6 @@ class Catalog
   protected:
   public:
     size_t indexSize()   const { return _index.size(); }
-    size_t catalogSize() const { return _catalog.size(); }
 
     const Card* getCardByName(const char *pN)
     { 
@@ -58,11 +56,8 @@ class Catalog
     { 
     uint32_t i = (decDeg * 360) + raDeg;
 
-      return &_sky[i];
+      return &_celestialsky[i];
     }
-
-    const Star* getStarByID(size_t catalogID) const
-    { return &_catalog[catalogID]; }
 
     void add(const Card& card) 
     { _index[card.commonName()] = card; }
@@ -71,8 +66,7 @@ class Catalog
     { 
     uint32_t i = star.region();
 
-      _sky[i].add(star);
-      _catalog.push_back(star);
+      _celestialsky[i].add(star);
     }
   
     Catalog(void);

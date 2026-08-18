@@ -64,6 +64,7 @@ int             rc = 0;
  //   spScope->capture(catalog,"Milky Way",RA_MILKYWAY,DEC_MILKYWAY,currentGMST,exposureTime,numExposures);
  
     spScope->captureImageSet(catalog,"Alpha Centauri A",currentGMST,exposureTime,numExposures,true);
+    spScope->captureImageSet(catalog,"Polaris",currentGMST,exposureTime,numExposures,true);
  
     cv::waitKey(0);
   }
