@@ -53,7 +53,7 @@ int             rc = 0;
   {
   SpTracker spTracker     = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
   SpOTA     spOTA         = std::make_shared<OTA>(30.0,160.0);
-  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(11.3f,6.3f),0.006f);
+  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(11.3f,6.3f),0.006f); // supposed to be 0.0029
   
     spSeeStarS30Pro       = std::make_shared<Scope>("SeeStar S30 Pro",spTracker,spOTA,spSensor);
 
@@ -64,7 +64,7 @@ int             rc = 0;
   {
   SpTracker spTracker     = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
   SpOTA     spOTA         = std::make_shared<OTA>(50.0,245.0);
-  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(7.0f,7.0f),0.006f);
+  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(7.0f,7.0f),0.006f);// supposed to be 0.002
 
     spTest                = std::make_shared<Scope>("Test",spTracker, spOTA, spSensor);
      spTest->setOutPath(outPath);
