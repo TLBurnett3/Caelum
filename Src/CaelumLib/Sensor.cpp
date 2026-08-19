@@ -114,7 +114,7 @@ double fwhmOpticsPix = fwhmOpticsArcsec / pixelScale;    // ~0.74 pixels
   _fovDeg.x = (2.0f * glm::degrees(atan((_sensorSize.x / 2.0f) / spOTA->focalLength())));
   _fovDeg.y = (2.0f * glm::degrees(atan((_sensorSize.y / 2.0f) / spOTA->focalLength())));
 
-  spOTA->setFovDeg(std::sqrt(std::pow(_fovDeg.x,2) + std::pow(_fovDeg.y,2)));
+  spOTA->setFovDeg(getBoundingRadiusDeg() * 2.0);
 
   // Root-sum-square total FWHM in pixels
   _fwhmPixels = std::sqrt(fwhmSeeingPix * fwhmSeeingPix + fwhmOpticsPix * fwhmOpticsPix);

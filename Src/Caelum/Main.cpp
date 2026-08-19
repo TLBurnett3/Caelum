@@ -39,7 +39,11 @@ Hipparcos       hipparcos(hipparocsfilepath);
 Tycho2          tycho2(tycho2FilePath);
 Index           index(indexFilePath);
 Catalog         catalog;
+SpScope         spSeeStarS30Pro;
+SpScope         spTest;
+std::filesystem::path outPath("e:/Caelum");
 int             rc = 0;
+
 
   rc |= index.loadStarCards(catalog);  
   rc |= hipparcos.loadStarCatalog(catalog);
@@ -47,25 +51,35 @@ int             rc = 0;
 
   if (rc == 0)
   {
+  SpTracker spTracker     = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
+  SpOTA     spOTA         = std::make_shared<OTA>(30.0,160.0);
+  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(11.3f,6.3f),0.006f);
+  
+    spSeeStarS30Pro       = std::make_shared<Scope>("SeeStar S30 Pro",spTracker,spOTA,spSensor);
+
+    spSeeStarS30Pro->setOutPath(outPath);
+  }
+
+  if (rc == 0)
+  {
+  SpTracker spTracker     = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
+  SpOTA     spOTA         = std::make_shared<OTA>(50.0,245.0);
+  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(7.0f,7.0f),0.006f);
+
+    spTest                = std::make_shared<Scope>("Test",spTracker, spOTA, spSensor);
+     spTest->setOutPath(outPath);
+  }
+
+  if (rc == 0)
+  {
   double    exposureTime  = 10.0;  // secs
   double    trackTime     = 60 * 60 * 1; // seconds * minutes * hours
-  double     aperture     = 50.0;
-  double     focalLength  = 245.0;
-//  double     aperture    = 200.0;
-//  double     focalLength = 800.0;
-  SpTracker spTracker     = std::make_shared<Tracker>(LONG_AUSTIN, LAT_AUSTIN);
-  SpOTA     spOTA         = std::make_shared<OTA>( aperture, focalLength);
-  SpSensor  spSensor      = std::make_shared<Sensor>(spOTA,glm::vec2(7.0f, 7.0f),0.006f);
-  SpScope   spScope       = std::make_shared<Scope>(spTracker, spOTA, spSensor);
   double    currentGMST   = 210.0;
   uint32_t  numExposures  = (uint32_t)(trackTime / exposureTime);
+ 
+   spTest->captureImageSet(catalog,"Alpha Centauri A",currentGMST,exposureTime,numExposures,true);
+   spSeeStarS30Pro->captureImageSet(catalog,"Alpha Centauri A",currentGMST,exposureTime,numExposures,true);
 
- //   spScope->capture(catalog,"Pleades",RA_PLEADES,DEC_PLEADES,currentGMST,exposureTime,numExposures);
- //   spScope->capture(catalog,"Milky Way",RA_MILKYWAY,DEC_MILKYWAY,currentGMST,exposureTime,numExposures);
- 
-    spScope->captureImageSet(catalog,"Alpha Centauri A",currentGMST,exposureTime,numExposures,true);
-    spScope->captureImageSet(catalog,"Polaris",currentGMST,exposureTime,numExposures,true);
- 
     cv::waitKey(0);
   }
 

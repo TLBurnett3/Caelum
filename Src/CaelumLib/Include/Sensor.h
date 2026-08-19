@@ -58,7 +58,6 @@ class Sensor
     { return _imageSize.y; }
 
     
-
     // Helper to estimate normalized BGR flux weights from star's B-V index
     cv::Vec3f getBGRWeightsFromBV(float bv) 
     {
@@ -75,6 +74,16 @@ class Sensor
     
       // OpenCV uses BGR channel ordering
       return cv::Vec3f(b / norm, g / norm, r / norm); 
+    }
+
+    // Calculate the corner bounding radius for any rectangular FOV (in degrees)
+    const double getBoundingRadiusDeg(void) const
+    {
+    double half_x = _fovDeg.x * 0.5f;
+    double half_y = _fovDeg.y * 0.5f;
+    
+      // Hypotenuse from center to viewport corner
+      return std::sqrt(half_x * half_x + half_y * half_y);
     }
 
     void render(const Star& star,const double exposureTime, double xTangent, double yTangent,cv::Mat &image);

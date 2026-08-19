@@ -217,6 +217,15 @@ void Scope::getBinSearchSpace(BinSearchSpace &space,
   }
 }
 
+std::string to_string_with_precision(double value,int precision = 2)
+{
+std::ostringstream out;
+
+  out << std::fixed << std::setprecision(precision) << value;
+
+  return out.str();
+}
+
 
 //-----------------------------------------------------------------------------
 // track
@@ -250,41 +259,67 @@ BinSearchSpace      space;
     glm::vec3 vRight = glm::normalize(glm::cross(vDir, vPos));  // vPos is for altaz mount, vWorldUp is for equatorial mount
     glm::vec3 vUp    = glm::cross(vRight, vDir); 
 
-
-    for (const auto& [dec_bin, ra_spans] : space.dec_row_spans) 
+    if (1)
     {
-      for (const auto& span : ra_spans) 
+      for (const auto& [dec_bin, ra_spans] : space.dec_row_spans) 
       {
-        for (int ra_bin = span.min_ra; ra_bin <= span.max_ra; ++ra_bin) 
+        for (const auto& span : ra_spans) 
         {
-        const Region *pRegion = catalog.region(ra_bin,dec_bin);
-          
-          for (size_t j = 0; j < pRegion->fieldSize(); ++j)
+          for (int ra_bin = span.min_ra; ra_bin <= span.max_ra; ++ra_bin) 
           {
-          const Star *pStar = pRegion->getStar(j);
-          glm::vec3  vStar  = celestialToEuclidean(*pStar);         
+          const Region *pRegion = catalog.region(ra_bin,dec_bin);
+          
+            for (size_t j = 0; j < pRegion->fieldSize(); ++j)
+            {
+            const Star *pStar = pRegion->getStar(j);
+            glm::vec3  vStar  = celestialToEuclidean(*pStar);         
 
-            double zCam = glm::dot(vStar,vDir);
+              double zCam = glm::dot(vStar,vDir);
 
-            if (zCam > 0)
-            {       
-            // Project star onto Camera Right (x) and Up (y) axes
-            double    xCam       = glm::dot(vStar, vRight);   // Horizontal displacement
-            double    yCam       = glm::dot(vStar, vUp);      // Vertical displacement
-            // Project star onto Camera Right (x) and Up (y) axes
-            double    xTangent   = xCam / zCam;
-            double    yTangent   = yCam / zCam;
+              if (zCam > 0)
+              {       
+              // Project star onto Camera Right (x) and Up (y) axes
+              double    xCam       = glm::dot(vStar, vRight);   // Horizontal displacement
+              double    yCam       = glm::dot(vStar, vUp);      // Vertical displacement
+              // Project star onto Camera Right (x) and Up (y) axes
+              double    xTangent   = xCam / zCam;
+              double    yTangent   = yCam / zCam;
 
-              _spSensor->render(*pStar,exposureTime,xTangent,yTangent,image);
+                _spSensor->render(*pStar,exposureTime,xTangent,yTangent,image);
+              }
             }
           }
         }
       }
     }
+    else
+    {
+      for (size_t i = 0;i < catalog.numRegions();i++)
+      {
+      const Region *pRegion = catalog.region(i);
+          
+        for (size_t j = 0; j < pRegion->fieldSize(); ++j)
+        {
+        const Star *pStar = pRegion->getStar(j);
+        glm::vec3  vStar  = celestialToEuclidean(*pStar);         
 
+          double zCam = glm::dot(vStar,vDir);
+
+          if (zCam > 0)
+          {       
+          // Project star onto Camera Right (x) and Up (y) axes
+          double    xCam       = glm::dot(vStar, vRight);   // Horizontal displacement
+          double    yCam       = glm::dot(vStar, vUp);      // Vertical displacement
+          // Project star onto Camera Right (x) and Up (y) axes
+          double    xTangent   = xCam / zCam;
+          double    yTangent   = yCam / zCam;
+
+            _spSensor->render(*pStar,exposureTime,xTangent,yTangent,image);
+          }
+        }
+      }
+    }
     timer.stop();
-
-    std::cout << pStr << " Frame: " << i << " " << timer.seconds() << std::endl;
 
     if (display)
     {
@@ -292,12 +327,53 @@ BinSearchSpace      space;
       {
       cv::Mat visualFrame = visualizeStellarFlux(image,500.0f);
   
-        cv::imshow(pStr, visualFrame);
+        image = visualFrame;
       }
-      else
-        cv::imshow(pStr,image);
+    }
 
-      cv::waitKey(10);
+
+    {
+    std::string fName = pStr;
+
+      fName += " ";
+      fName += _name;
+      fName += " ";
+      fName += to_string_with_precision(_spOTA->aperature(),2);
+      fName += "mm ";
+      fName += to_string_with_precision(_spOTA->focalLength(),2);
+      fName += "mm";
+
+      cv::imshow(fName,image);
+
+      fName += ".png";
+
+      std::cout << fName << " Frame: " << i << " " << timer.seconds() << std::endl;
+
+      for (size_t i = 0;i < fName.size();i++)
+      {
+        if (fName[i] == ' ')
+          fName[i] = '_';
+      }
+
+      {
+      std::filesystem::path outPath = _outPath;
+
+        outPath /= _name;
+
+        if (!std::filesystem::exists(outPath))
+          std::filesystem::create_directory(outPath);
+
+        outPath /= fName;
+
+        for (size_t i = 0;i < outPath.string().size();i++)
+        {
+          if (outPath.string()[i] == ' ')
+            outPath.string()[i] = '_';
+        }
+
+        cv::imwrite(outPath.string(),image);
+      }
+      cv::waitKey(10);    
     }
 
     imageLst.push_back(image);
@@ -358,7 +434,9 @@ const Card    *pCard = catalog.getCardByName(pTargetName);
 //---------------------------------------------------------------------
 // Scope
 //---------------------------------------------------------------------
-Scope::Scope(SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor) : _spTracker(spTracker),
+Scope::Scope(const char *pName, SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor) : 
+                                                                       _name(pName),
+                                                                       _spTracker(spTracker),
                                                                        _spOTA(spOTA),
                                                                        _spSensor(spSensor)
 {

@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <filesystem>
 
 // 3rdPartyLibs
 #include <opencv2/opencv.hpp>
@@ -49,9 +50,12 @@ class Scope
 
   // Members
   private:
-    SpTracker _spTracker;       // Pointer to the Tracker object
-    SpOTA     _spOTA;           // Pointer to the OTA object
-    SpSensor  _spSensor;        // Pointer to the Sensor object
+    std::string _name;
+    SpTracker   _spTracker;       // Pointer to the Tracker object
+    SpOTA       _spOTA;           // Pointer to the OTA object
+    SpSensor    _spSensor;        // Pointer to the Sensor object
+
+    std::filesystem::path _outPath;
 
   protected:
   public:   
@@ -96,6 +100,15 @@ class Scope
       *tyc3 = static_cast<uint16_t>(id & 0x07);           // Bottom 3 bits
     }
 
+    std::string to_string_with_precision(double value,int precision = 2)
+    {
+    std::ostringstream out;
+
+      out << std::fixed << std::setprecision(precision) << value;
+
+      return out.str();
+    }
+
     void Scope::getBinSearchSpace(BinSearchSpace &space,
                                   const double center_ra, const double center_dec, 
                                   const double fov_radius_deg);
@@ -105,6 +118,14 @@ class Scope
     cv::Mat visualizeStellarFlux(const cv::Mat& rawSensorImage, float stretchScale);
 
   public:
+    void setOutPath(const std::filesystem::path &outPath) 
+    { 
+      _outPath = outPath; 
+
+      if (!std::filesystem::exists(_outPath))
+        std::filesystem::create_directories(_outPath); 
+    }
+
     int track(Catalog &catalog, 
               const char *pStr, const double ra, const double dec,
               const double gmstDegrees, const double tDelta,
@@ -121,7 +142,7 @@ class Scope
  
 
  
-    Scope(SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor);
+    Scope(const char *pName,SpTracker& spTracker, SpOTA& spOTA, SpSensor& spSensor);
 
     ~Scope();
 };

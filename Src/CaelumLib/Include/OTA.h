@@ -55,7 +55,9 @@ class OTA
     { return _fovDeg; }
 
     void setFovDeg(const double d) 
-    { _fovDeg = (2.0f * glm::degrees(atan((d / 2.0f) / _focalLength))); }
+    { 
+      _fovDeg = d;
+    }
 
     OTA(const double aperature,const double focalLength);
     ~OTA();

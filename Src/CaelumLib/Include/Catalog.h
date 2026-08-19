@@ -40,6 +40,7 @@ class Catalog
   protected:
   public:
     size_t indexSize()   const { return _index.size(); }
+    size_t numRegions(void) const { return _celestialsky.size(); }
 
     const Card* getCardByName(const char *pN)
     { 
@@ -56,6 +57,11 @@ class Catalog
     { 
     uint32_t i = (decDeg * 360) + raDeg;
 
+      return &_celestialsky[i];
+    }
+
+    const Region *region(const size_t i)
+    { 
       return &_celestialsky[i];
     }
 
